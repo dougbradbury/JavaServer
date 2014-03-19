@@ -18,6 +18,8 @@ public class HttpRequestTest {
         assertEquals("GET", request.getMethod());
     }
 
+    //request built in the setup isn't used in these next three tests.
+    //Maybe extract a method to build requests instead?
     @Test
     public void parseThePath(){
         ByteArrayInputStream inputStream = new ByteArrayInputStream(("GET /test_path HTTP/1.1").getBytes());
@@ -57,4 +59,6 @@ public class HttpRequestTest {
         assertEquals("variable_1=test1", request.getIndividualParams()[0]);
         assertEquals("variable_2=test2", request.getIndividualParams()[1]);
     }
+
+    //I don't see any tests for character decoding
 }

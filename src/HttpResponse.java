@@ -6,15 +6,28 @@ import java.nio.file.Paths;
 /**
  * Created by elizabethengelman on 3/12/14.
  */
+
+//Single Responsibility Principle Violation:
+//How many responsibilities does this class have? I count at least three
+        // 1) Determining what kind of request is coming in
+        // 2) Retriving content from file system (or generating it) Let's
+        //    call that "fulfilling" the request
+        // 3) Building the response
+        // 4) Sending the respons down a stream
 public class HttpResponse {
+  //Field that are not part of the public interface should be private
     HttpRequest request;
     byte[] requestBody;
-    byte[] requestImageBody;
-    StringBuffer responseReturned = new StringBuffer();
+    byte[] requestImageBody; //dead code
+    StringBuffer responseReturned = new StringBuffer(); //Returned is a funny name for a thing
     public HttpResponse(HttpRequest req){
         request = req;
     }
 
+    //Open-Close Principle Violation:
+    //How can this be refactored to be open to extension
+    //(supporting new methods or response types) without
+    //actually modifing this class?
     public String createResponse(){
 
         if (request.getPath().equals("/")){
@@ -23,7 +36,11 @@ public class HttpResponse {
         }else if(new File("../cob_spec/public" + request.getPath()).exists()){
             if (request.getMethod().equals("GET")){
                 if (isAnImage()){
+                    //so deeply nested here in if statements here.
+                    //try to stay max 2 ifs deep in a single function
                         responseReturned.append("HTTP/1.1 200 OK\r\nContent-Type: image/png\r\n\r\n");
+                  //it looks like the Content-Type will be set to png even
+                  //if the image is a jpg or a gif
                         setBodyContent();
                 }else{
                       responseReturned.append("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n");
@@ -38,6 +55,10 @@ public class HttpResponse {
         }else if(request.getPath().equals("/form")) {
             responseReturned.append(create200Response());
         }else if(request.getPath().equals("/method_options")){
+          //try to keep a function working on the same level of abstraction
+          //sometimes a method is called to create a response
+          //and sometimes the response is created inline.
+          //If it's constent, then it will be easier to read
             responseReturned.append("HTTP/1.1 200 OK\r\n Allow: GET,HEAD,POST,OPTIONS,PUT\r\n");
         }else if(request.getPath().equals("/redirect")){
             responseReturned.append("HTTP/1.1 307\r\nLocation: http://localhost:5000/");
@@ -58,6 +79,8 @@ public class HttpResponse {
             requestBody = ("File not found.").getBytes();
         }
         return responseReturned.toString();
+        //This is a very long method. But the good news is that
+        //I am done picking on it now :)
     }
 //
 //    public void sendResponse(String response, String body, PrintWriter outputToClient){
@@ -65,6 +88,7 @@ public class HttpResponse {
 //        outputToClient.println(body);
 //    }
 
+    //I don't see a test for this method
     public void sendNewResponse(OutputStream outputStream){
         try {
             byte[] requestHeader = responseReturned.toString().getBytes();

@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+//This must be an earlier version?
 public class Server {
     public static class ServerThread extends Thread {
         Socket connectedClient = null;

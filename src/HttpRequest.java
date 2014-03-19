@@ -35,6 +35,8 @@ public class HttpRequest {
         return requestString.split(" ")[2];
     }
 
+    //could be private.  Not called outside of the test
+    //test for getIndividualParams would cover this function too
     public String getParametersFromPath(){
         String parameters = getPath().substring(getPath().lastIndexOf("?") + 1);
         System.out.println("these are the parameters " + parameters);
@@ -51,12 +53,19 @@ public class HttpRequest {
         return decodeCharacters(variableValue);
     }
 
+    //what is this returned a HashMap of names to values?
+    //Then one wouldn't have to keep calling back in to extract
+    //variable names and values
     public String[] getIndividualParams(){
         String params = getParametersFromPath();
         String[] paramPairs = params.split("&");
         return paramPairs;
     }
 
+    //Is there a library function that can do this work?
+    //There is also and algorithm that can get this done
+    //what comes after the % is actually the ASCII character code
+    //of the character wanted
     public String decodeCharacters(String value){
         String s1 = value.replace("%20", " ");
         String s2 = s1.replace("%3C", "<");

@@ -14,10 +14,18 @@ public class HttpServer {
 
         public void run() {
             try {
+              //This could be extracted so that it is more testable
+              //HandleConnection(in, out) or something like that
                 request = new HttpRequest(connectedClient.getInputStream());
                 response = new HttpResponse(request);
                 response.createResponse();
                 response.sendNewResponse(connectedClient.getOutputStream());
+                //One connection, One request, the the socket is close
+                //This is a good place to start, but it might
+                //be fun to look at the Connection header
+                //if it is 'Connection: Keep-Alive'
+                //then the server should keep reading from this socket
+                //looking for a new request after processing the first one
             } catch (IOException e) {
                 System.out.println(e);
             }
